@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="zh-HK">
+<head>
+<meta charset="UTF-8">
+<title>認識情緒</title>
+
+<style>
+  body {
+    font-family: "Microsoft JhengHei", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 10px;
+    line-height: 1.6;
+  }
+
+  h1 {
+    font-size: 2.4rem;
+    margin-bottom: 12px;
+    text-align: center;
+  }
+
+  /* 固定畫框高度 */
+  #image-container {
+    width: 100%;
+    height: 320px;
+    margin: 0 auto 12px;
+    background-color: #ffffff;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
+  #scene-image {
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: contain;
+  }
+
+  ///* caption 預留高度 */
+ // #caption {
+   // min-height: 2.5em;
+    //font-size: 1.8rem;
+    //margin-bottom: 16px;
+    //text-align: center;
+//  }
+
+  /* 八個圖片按鈕 */
+  .answer-buttons {
+    display: grid;
+    grid-template-columns: repeat(4, auto);
+    column-gap: 0px;   /* ← 水平距離 */
+    row-gap: 10px;      /* ← 垂直距離 */
+    justify-items: center;
+    margin-bottom: 20px;
+  }
+
+  .answer-btn {
+    width: 120px;
+    height: 120px;
+    border: 2px solid #999;
+    border-radius: 8px;
+    cursor: pointer;
+    object-fit: contain;
+  }
+
+  /* 對錯網底 */
+  .correct {
+    background-image: linear-gradient(135deg, rgba(0,200,0,0.2) 25%, transparent 25%, transparent 50%, rgba(0,200,0,0.2) 50%, rgba(0,200,0,0.2) 75%, transparent 75%, transparent);
+    background-size: 12px 12px;
+    border-color: #2e7d32;
+  }
+
+  .incorrect {
+    background-image: linear-gradient(135deg, rgba(220,0,0,0.2) 25%, transparent 25%, transparent 50%, rgba(220,0,0,0.2) 50%, rgba(220,0,0,0.2) 75%, transparent 75%, transparent);
+    background-size: 12px 12px;
+    border-color: #c62828;
+  }
+
+  /* 控制按鈕 */
+  .control-buttons {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+  }
+
+  button {
+    padding: 10px 16px;
+    font-size: 1.4rem;
+    border-radius: 6px;
+    border: 1px solid #999;
+    background-color: #f5f5f5;
+    cursor: pointer;
+  }
+</style>
+</head>
+
+<body>
+
+<h1>認識情緒</h1>
+
+<div id="image-container">
+  <img id="scene-image" src="" alt="">
+</div>
+
+<div id="caption"></div>
+
+<!-- 八個圖片按鈕（請換成你的圖片） -->
+<div class="answer-buttons">
+  <img class="answer-btn" data-answer="A" src="btn/angry_t.png">
+  <img class="answer-btn" data-answer="B" src="btn/happy_t.png">
+  <img class="answer-btn" data-answer="C" src="btn/scared_t.png">
+  <img class="answer-btn" data-answer="D" src="btn/sad_t.png">
+  <img class="answer-btn" data-answer="E" src="btn/embarrassed_t.png">
+  <img class="answer-btn" data-answer="F" src="btn/excited_t.png">
+  <img class="answer-btn" data-answer="G" src="btn/disappointed_t.png">
+  <img class="answer-btn" data-answer="H" src="btn/worry_t.png">
+</div>
+
+<div class="control-buttons">
+  <button id="clear-btn">清除</button>
+  <button id="next-btn">下一題</button>
+</div>
+
+<script>
+const questions = [
+  {
+    image: "et/angry_t.png",
+    correct: "A"
+  },
+  {
+    image: "et/happy_t.png",
+    correct: "B"
+  },
+  {
+    image: "et/scared_t.png",
+    correct: "C"
+  },
+  {
+    image: "et/sad_t.png",
+    correct: "D"
+  },
+  {
+    image: "et/embarrassed_t.png",
+    correct: "E"
+  },
+  {
+    image: "et/excited_t.png",
+    correct: "F"
+  },
+  {
+    image: "et/disappointed_t.png",
+    correct: "G"
+  },
+  {
+    image: "et/worry_t.png",
+    correct: "H"
+  },
+
+
+
+
+  // 你可繼續加入更多題目
+];
+
+const imgEl = document.getElementById("scene-image");
+const captionEl = document.getElementById("caption");
+const answerBtns = document.querySelectorAll(".answer-btn");
+const clearBtn = document.getElementById("clear-btn");
+const nextBtn = document.getElementById("next-btn");
+
+let order = [];
+let pointer = 0;
+let currentIndex = -1;
+
+// 洗牌
+function shuffleQuestions() {
+  order = [...questions.keys()];
+  for (let i = order.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [order[i], order[j]] = [order[j], order[i]];
+  }
+  pointer = 0;
+}
+
+// 顯示下一題
+function loadNextQuestion() {
+  clearFeedback();
+
+  if (pointer >= order.length) shuffleQuestions();
+
+  currentIndex = order[pointer++];
+  const q = questions[currentIndex];
+
+  imgEl.src = q.image;
+  captionEl.textContent = q.caption;
+}
+
+// 清除按鈕效果
+function clearFeedback() {
+  answerBtns.forEach(btn => btn.classList.remove("correct", "incorrect"));
+}
+
+// 按圖片作答
+answerBtns.forEach(btn => {
+  btn.addEventListener("click", () => {
+    clearFeedback();
+    const chosen = btn.dataset.answer;
+    const correct = questions[currentIndex].correct;
+
+    if (chosen === correct) {
+      btn.classList.add("correct");
+    } else {
+      btn.classList.add("incorrect");
+    }
+  });
+});
+
+clearBtn.addEventListener("click", clearFeedback);
+nextBtn.addEventListener("click", loadNextQuestion);
+
+// 初始：不載入題目，只顯示空白畫框
+shuffleQuestions();
+imgEl.src = "";
+captionEl.textContent = "";
+</script>
+
+</body>
+</html>
